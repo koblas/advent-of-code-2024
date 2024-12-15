@@ -50,11 +50,14 @@ func ParseInput(lines []string) (Input, error) {
 	return input, nil
 }
 
-func check(prob Problem) int {
+func check(prob Problem, offset int) int {
 	// A = (8400 - B(22)) / 94
 	// B = (94 * 5400 - 34 * 8400) / (-34 * 22 + 94 * 67)
 
-	bn := (prob.moveA[0]*prob.prize[1] - prob.moveA[1]*prob.prize[0])
+	pX := prob.prize[0] + offset
+	pY := prob.prize[1] + offset
+
+	bn := (prob.moveA[0]*pY - prob.moveA[1]*pX)
 	bd := (-prob.moveA[1]*prob.moveB[0] + prob.moveA[0]*prob.moveB[1])
 
 	if bn%bd != 0 {
@@ -62,7 +65,7 @@ func check(prob Problem) int {
 	}
 
 	b := bn / bd
-	an := prob.prize[0] - b*prob.moveB[0]
+	an := pX - b*prob.moveB[0]
 	ad := prob.moveA[0]
 	if an%ad != 0 {
 		return 0
@@ -119,7 +122,7 @@ func PartOneSolution(input Input) (int, error) {
 	sum := 0
 
 	for _, item := range input.data {
-		sum += check(item)
+		sum += check(item, 0)
 	}
 
 	return sum, nil
@@ -129,7 +132,8 @@ func PartTwoSolution(input Input) (int, error) {
 	sum := 0
 
 	for _, item := range input.data {
-		sum += checkBig(item)
+		// sum += checkBig(item)
+		sum += check(item, 10000000000000)
 	}
 
 	return sum, nil
