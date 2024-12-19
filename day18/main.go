@@ -2,12 +2,12 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"os"
 	"slices"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 )
 
@@ -175,7 +175,7 @@ func PartOneSolution(input Input) (int, error) {
 	size := 70
 	steps := 1024
 	// test size
-	if false {
+	if testing.Testing() {
 		size = 6
 		steps = 12
 	}
@@ -193,22 +193,30 @@ func PartTwoSolution(input Input) (string, error) {
 	size := 70
 	steps := 1024
 	// test size
-	if false {
+	if testing.Testing() {
 		size = 6
 		steps = 12
 	}
 
-	grid := makeGrid(size, steps, input)
 	end := Pos{size, size}
 
-	for _, p := range input.points[steps:] {
-		grid[p] = "#"
+	l := steps
+	r := len(input.points)
+	for l != r {
+		var grid Grid
+
+		mid := (l + r + 1) / 2
+		grid = makeGrid(size, mid, input)
+
 		if walk(grid, end) < 0 {
-			return fmt.Sprintf("%d,%d", p[0], p[1]), nil
+			r = mid - 1
+		} else {
+			l = mid
 		}
 	}
 
-	return "", errors.New("failed to find solution")
+	p := input.points[l]
+	return fmt.Sprintf("%d,%d", p[0], p[1]), nil
 }
 
 func main() {
